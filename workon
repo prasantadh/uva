@@ -16,5 +16,8 @@ while true; do
     if [ "$filename" != "main.cpp" ]; then
         inputfile="$1/$filename";
     fi;
-    g++ -std=c++11 $1/main.cpp -o $1/a.out && $1/a.out < $inputfile
+    g++ -std=c++11 $1/main.cpp -o $1/a.out && timeout 3 $1/a.out < $inputfile; 
+    if [ $? == 124 ]; then
+        echo timeout;
+    fi;
 done;
