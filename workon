@@ -16,12 +16,15 @@ while true; do
     if [ "$filename" != "main.cpp" ]; then
         inputfile="$1/$filename";
     fi;
-    g++ -std=c++11 $1/main.cpp -o $1/a.out && \
+    g++ -std=c++11 $1/main.cpp -o $1/a.out
+    if [ $? == 0 ]; then
         timeout 3 $1/a.out < $inputfile > $1/output;
-    if [ $? == 124 ]; then
-        echo timeout;
-    else
-        cat $1/output;
-        xclip $1/output;
+
+        if [ $? == 124 ]; then
+            echo timeout;
+        else
+            cat $1/output;
+            xclip $1/output;
+        fi;
     fi;
 done;
