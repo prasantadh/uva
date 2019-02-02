@@ -7,23 +7,6 @@ int N, C, M, K[20];
 int price[20][20];
 int state[20][201];
 
-/* @params
- *      money:  amount left to buy garments with
- *      g:      garment number currently attempting to buy
- * @returns
- *      min money left after buying one of garment g and onwards if possible
- *      INF otherwise
- */
-int shop(int money, int g) {
-    if (money < 0) return INF;
-    if (g == C) return money;
-    if (state[g][money] != INF) return state[g][money];
-    int ans = INF;
-    for (int i = 0; i < K[g]; ++i)
-        ans = min(ans, shop(money - price[g][i], g+1));
-    return (state[g][money] = ans);
-}
-
 int main(int argc, char **argv) {
     cin >> N;
     while(N--) {
@@ -33,12 +16,31 @@ int main(int argc, char **argv) {
             for(int j = 0; j < K[i]; ++j)
                 cin >> price[i][j];
         }
+        // initialize state table
         for (int i = 0; i < C; ++i)
-            for (int j = 0; j <= M; ++j)
-                state[i][j] = INF;
-        int ans = shop(M, 0);
-        if (ans == INF) cout << "no solution" << endl;
-        else cout << M - ans << endl;
+            for (int j = 0; j <= M; ++j) 
+                state[i][j] = 0;
+
+        // fill in the pre-reqs
+        for (int i = 0; i < K[0]; ++i) {
+            if (price[0][i] <= M)
+                state[0][price[0][i]] = 1;
+        }
+        // fill up the table
+        for (int g = 0; g < C - 1; ++g) {
+            for(int m = 0; m < M; ++m) {
+                if (state[g][m] == 1) {
+                    for(int k = 0; k < K[g+1]; ++k) {
+                        if (m + price[g+1][k] <= M)
+                            state[g+1][m + price[g+1][k]] = 1;
+                    }}}}
+        // extract the answer
+        int ans = 0;
+        for (int i = 0; i <= M; ++i)
+            if (state[C-1][i]) ans = i;
+
+        if (ans == 0) cout << "no solution" << endl;
+        else cout << ans << endl;
     }
     return 0;
 }
